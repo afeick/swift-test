@@ -3,7 +3,7 @@ name: CI
 jobs:
   build:
     runs-on: macos-latest
-     steps:
+    steps:
       - uses: actions/checkout@v2
       - name: Build
         run: swift build
