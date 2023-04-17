@@ -1,6 +1,7 @@
 public struct SwiftTest {
-    public private(set) var text = "Hello, Bitches!"
+    public private(set) var text : String
 
-    public init() {
+    public init(_ message: String = "Hello, World !") {
+        text = message
     }
 }
