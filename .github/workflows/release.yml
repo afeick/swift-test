@@ -16,7 +16,7 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: afeick/github-release-on-push-action@master
+      - uses: afeick/github-release-on-push-action@main
         with:
           bump_version_scheme: norelease
           use_github_release_notes: true
