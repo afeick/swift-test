@@ -1,3 +1,6 @@
+analyzer_rules:
+  - unused_declaration
+  - unused_import
 opt_in_rules:
   - closure_end_indentation
   - contains_over_first_not_nil
@@ -12,7 +15,6 @@ opt_in_rules:
   - prohibited_super_call
   - sorted_first_last
   - trailing_closure
-  - unused_import
 disabled_rules:
   - identifier_name
   - private_over_fileprivate
