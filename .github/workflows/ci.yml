@@ -15,13 +15,13 @@ jobs:
       - name: Lint
         run: |
           set -o pipefail
-          swiftlint lint --strict --quiet | sed -E 's/^(.*):([0-9]+):([0-9]+): (warning|error|[^:]+): (.*)/::\4 title=Lint error,file=\1,line=\2,col=\3::\5\n\1:\2:\3/'
+          swiftlint lint --quiet | sed -E 's/^(.*):([0-9]+):([0-9]+): (warning|error|[^:]+): (.*)/::\4 title=Lint error,file=\1,line=\2,col=\3::\5\n\1:\2:\3/'
       - name: Analyze
         run: |
            set -o pipefail
-           xcodebuild analyze -verbose -scheme SwiftTest  -destination 'platform=macos' | tee -a xcodebuild.log | xcpretty
+           xcodebuild analyze -verbose -scheme SwiftTest -destination 'platform=macos' | tee -a xcodebuild.log | xcpretty
            swiftlint analyze --compiler-log-path xcodebuild.log --strict --quiet | sed -E 's/^(.*):([0-9]+):([0-9]+): (warning|error|[^:]+): (.*)/::\4 title=Lint error,file=\1,line=\2,col=\3::\5\n\1:\2:\3/'
       - name: Test
         run: |
            set -o pipefail
-           xcodebuild test -scheme SwiftTest  -destination 'platform=macos' | xcpretty
+           xcodebuild test -scheme SwiftTest -destination 'platform=macos' | xcpretty

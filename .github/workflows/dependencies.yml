@@ -4,6 +4,7 @@ on: [workflow_dispatch]
 
 jobs:
   spm-dep-check:
+    name: Check Swift Dependencies
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v3
