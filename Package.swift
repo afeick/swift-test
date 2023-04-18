@@ -12,7 +12,7 @@ let package = Package(
             targets: ["SwiftTest"])
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-log.git", exact: "1.4.0")
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.4.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
