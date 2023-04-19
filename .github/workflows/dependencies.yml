@@ -3,6 +3,7 @@ name: Package Dependency Check
 on: [workflow_dispatch]
 
 permissions:
+  content: write
   pull-requests: write
   
 jobs:
