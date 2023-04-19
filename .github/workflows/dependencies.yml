@@ -3,8 +3,7 @@ name: Package Dependency Check
 on: [workflow_dispatch]
 
 permissions:
-  content: write
-  pull-requests: write
+  contents: write
   
 jobs:
   swift-package-update-PR:
