@@ -3,10 +3,10 @@
     {
       "identity" : "swift-log",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:/apple/swift-log.git",
+      "location" : "https://github.com/apple/swift-log.git",
       "state" : {
-        "revision" : "173f567a2dfec11d74588eea82cecea555bdc0bc",
-        "version" : "1.4.0"
+        "revision" : "32e8d724467f8fe623624570367e3d50c5638e46",
+        "version" : "1.5.2"
       }
     }
   ],
