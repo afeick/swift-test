@@ -40,11 +40,17 @@ jobs:
           LABEL_COUNT=$((LABEL_COUNT+1))
           echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
           echo "LABEL='no version'" >> "$GITHUB_ENV"
+      - name: Version Label
+        if: env.LABEL_COUNT == 1
+        run: |
+          echo "::notice::Version label is: ${LABEL}"
       - name: No Version Label
-        if: ${{ env.LABEL_COUNT }} < 1
+        if: env.LABEL_COUNT < 1
         run: |
           echo "::error::No version label detected! PRs require one of the follow labels: major, minor, patch, no version"
+          exit -1
       - name: Multiple Version Labels
-        if: ${{ env.LABEL_COUNT }} > 1
+        if: env.LABEL_COUNT > 1
         run: |
           echo "::error::Too many versions detected! PRs require one of the follow labels: major, minor, patch, no version"
+          exit -1
