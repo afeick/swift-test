@@ -22,13 +22,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh api -H "Accept: application/vnd.github+json" /repos/afeick/swift-test/issues/${{ github.event.pull_request.number }}/labels
           gh api -H "Accept: application/vnd.github+json" /repos/afeick/swift-test/issues/${{ github.event.pull_request.number }}/labels | jq '[.[].name]'
-          LABEL_RESPONSE=$(gh api -H "Accept: application/vnd.github+json" /repos/afeick/swift-test/issues/${{ github.event.pull_request.number }}/labels)
           LABEL_RESPONSE_NAMES=$(gh api -H "Accept: application/vnd.github+json" /repos/afeick/swift-test/issues/${{ github.event.pull_request.number }}/labels | jq '[.[].name]')
-          echo $LABEL_RESPONSE
           echo $LABEL_RESPONSE_NAMES
-          exit 1
       - name: Major
         if: contains(github.event.pull_request.labels.*.name, 'major')
         run: |
