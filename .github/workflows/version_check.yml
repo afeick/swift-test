@@ -41,20 +41,16 @@ jobs:
           LABEL_COUNT=$((LABEL_COUNT+1))
           echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
           echo "LABEL='no version'" >> "$GITHUB_ENV"
-      - name: Version Label
-        if: env.LABEL_COUNT == 1
+      - name: Check Label
         run: |
-          echo "::notice::Version verified!"
-          echo "::notice::Successfully identified version label for PR: '${LABEL}'"
-      - name: No Version Label
-        if: env.LABEL_COUNT < 1
-        run: |
-          echo "::error::No version label detected!"
-          echo "::error::PRs require one of the following labels: major, minor, patch, no version"
-          exit -1
-      - name: Multiple Version Labels
-        if: env.LABEL_COUNT > 1
-        run: |
-          echo "::error::Too many versions detected!""
-          echo "::error::Remove extra version label(s). Only one of the following is allowed: major, minor, patch, no version"
-          exit ${LABEL_COUNT}
+          if [[ ${LABEL_COUNT} == 1 ]]; then
+            echo "::notice::Version verified!"
+            echo "::notice::Successfully identified version label for PR: '${LABEL}'"
+          elif [[ ${LABEL_COUNT} < 1 ]]; then
+            echo "::error::No version label detected!"
+            echo "::error::PRs require one of the following labels: major, minor, patch, no version"
+          elif [[ ${LABEL_COUNT} > 1 ]]; then
+            echo "::error::Too many versions detected!"
+            echo "::error::Remove extra version label(s). Only one of the following is allowed: major, minor, patch, no version"
+          fi
+          exit $((LABEL_COUNT-1))
