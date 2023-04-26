@@ -2,20 +2,19 @@ name: Version Check
 
 on:
   pull_request:
-   types: [opened, labeled, unlabeled, synchronize]
+    types: [opened, labeled, unlabeled, synchronize]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-   check_pr_labels:
-    name: Verify that the PR has a valid label 
+  check_pr_labels:
+    name: Verify that the PR has a valid label
     runs-on: ubuntu-latest
     env:
       LABEL: ""
       LABEL_COUNT: 0
-
     steps:
       - name: Major
         if: contains(github.event.issue.labels.*.name, 'major')
@@ -43,7 +42,9 @@ jobs:
           echo "LABEL='no version'" >> "$GITHUB_ENV"
       - name: No Version Label
         if: ${{ env.LABEL_COUNT }} < 1
-        run: echo "::error::No version label detected! PRs require one of the follow labels: major, minor, patch, no version"
+        run: |
+          echo "::error::No version label detected! PRs require one of the follow labels: major, minor, patch, no version"
       - name: Multiple Version Labels
         if: ${{ env.LABEL_COUNT }} > 1
-        run: echo "::error::Too many versions detected! PRs require one of the follow labels: major, minor, patch, no version"
+        run: |
+          echo "::error::Too many versions detected! PRs require one of the follow labels: major, minor, patch, no version"
