@@ -4,7 +4,7 @@ import Logging
 public struct SwiftTest {
     public private(set) var text: String
 
-    public init(_ message: String = "Hello, World!") {
+    public init(_ message: String = "Hello, World!!") {
         let logger = Logger(label: "SwiftTest")
         logger.info("message: \(message)")
         text = message
