@@ -10,21 +10,13 @@ concurrency:
 
 jobs:
   check_pr_labels:
-    name: Verify that the PR has a valid label
+    name: Verify PR label(s)
     runs-on: ubuntu-latest
     env:
       LABEL: ""
       LABEL_COUNT: 0
       PR_LABEL_LIST: ${{ toJson(github.event.pull_request.labels.*.name) }}
-      ISSUE_LABEL_LIST: ${{ toJson(github.event.issue.labels.*.name) }}
     steps:
-      - name: Get Current Labels
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh api -H "Accept: application/vnd.github+json" /repos/afeick/swift-test/issues/${{ github.event.pull_request.number }}/labels | jq '[.[].name]'
-          LABEL_RESPONSE_NAMES=$(gh api -H "Accept: application/vnd.github+json" /repos/afeick/swift-test/issues/${{ github.event.pull_request.number }}/labels | jq '[.[].name]')
-          echo $LABEL_RESPONSE_NAMES
       - name: Major
         if: contains(github.event.pull_request.labels.*.name, 'major')
         run: |
@@ -52,14 +44,17 @@ jobs:
       - name: Version Label
         if: env.LABEL_COUNT == 1
         run: |
-          echo "::notice::Version label is: ${LABEL}"
+          echo "::notice::Version verified!"
+          echo "::notice::Successfully identified version label for PR: '${LABEL}'"
       - name: No Version Label
         if: env.LABEL_COUNT < 1
         run: |
-          echo "::error::No version label detected! PRs require one of the follow labels: major, minor, patch, no version"
+          echo "::error::No version label detected!"
+          echo "::error::PRs require one of the following labels: major, minor, patch, no version"
           exit -1
       - name: Multiple Version Labels
         if: env.LABEL_COUNT > 1
         run: |
-          echo "::error::Too many versions detected! PRs require one of the follow labels: major, minor, patch, no version"
+          echo "::error::Too many versions detected!""
+          echo "::error::Remove extra version label(s). Only one of the following is allowed: major, minor, patch, no version"
           exit -1
