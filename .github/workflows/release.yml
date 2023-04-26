@@ -1,7 +1,10 @@
-name: Release
+name: Create Release
+
+concurrency:`
+  group: create-release
 
 on:
-  pull_request:
+  pull_request_target:
     types:
       - closed
     branches:
@@ -11,12 +14,90 @@ permissions:
   contents: write
 
 jobs:
-  release-on-push:
+  create_release:
+    name: "Create Release"
+
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: afeick/github-release-on-push-action@v1.0.0
+      - uses: actions/setup-node@v3
         with:
-          bump_version_scheme: norelease
-          use_github_release_notes: true
+          node-version: 16
+      - run: npm install semver
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const semver = require('semver');
+            const creator = context.payload.sender.login;
+            console.log(context.payload.sender);
+            // get version label
+            let valid_labels = ["major", "minor", "patch", "no version"];
+            let label_set = new Set(valid_labels);
+
+            const all_labels = context.payload.pull_request.labels;
+
+            var version_label = "";
+            all_labels.forEach((label) => {
+              if (label_set.has(label.name)) {
+                version_label = label.name;
+              }
+            });
+
+            if(!version_label) {
+              core.setFailed("No version label set")
+            }
+
+            var version_tags = [];
+            // get list of tags
+            await github.paginate(
+              github.rest.repos.listTags,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              })
+              .then((tags) => {
+                tags.forEach((tag) => {
+                  let clean_tag = semver.clean(tag.name);
+                  version_tags.push(semver.parse(clean_tag));
+                });
+              });
+
+            // sort tags by semantic version
+            let sorted_tags = version_tags.sort(semver.rcompare)
+            // grab 'newest' tag
+            let latest_tag = (sorted_tags.length > 0) ? sorted_tags[0] : semver.parse("0.0.0");
+            var new_tag;
+            switch(version_label) {
+              case "major":
+                new_tag = semver.inc(latest_tag, 'major')
+                break;
+              case "minor":
+                new_tag = semver.inc(latest_tag, 'minor')
+                break;
+              case "patch":
+                new_tag = semver.inc(latest_tag, 'patch')
+                break;
+              case "no version":
+                break;
+                // do nothing
+              default:
+                core.setFailed("Unable to create a new release tag")
+                break;
+            }
+
+            if (new_tag) {
+              // create the release
+              core.info(`Creating new release with tag: v${new_tag}`);
+              await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: `v${new_tag}`,
+                generate_release_notes: true
+              });
+              core.exportVariable('APP_VERSION', new_tag)
+              core.exportVariable('CREATE_RELEASE', 'true')
+            } else {
+              core.info("No version specified, not creating a release")
+              core.exportVariable('CREATE_RELEASE','false')
+            }
