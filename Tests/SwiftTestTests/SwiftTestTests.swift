@@ -7,7 +7,7 @@ final class SwiftTestTests: XCTestCase {
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
         XCTAssertEqual(SwiftTest().text, "Hello, World!")
-        XCTAssertEqual(SwiftTest("Hello, Bitches!").text, "Hello, Bitches!")
+        XCTAssertEqual(SwiftTest("Hello, Bitches!!!").text, "Hello, Bitches!!!")
         // adding a comment
     }
 }
