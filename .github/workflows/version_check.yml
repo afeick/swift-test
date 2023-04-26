@@ -57,4 +57,4 @@ jobs:
         run: |
           echo "::error::Too many versions detected!""
           echo "::error::Remove extra version label(s). Only one of the following is allowed: major, minor, patch, no version"
-          exit -1
+          exit ${LABEL_COUNT}
