@@ -10,8 +10,22 @@ jobs:
   ci:
     name: Lint, Analyze, Test
     runs-on: macos-latest
+    env:
+      BUNDLE: SwiftTest.bundle
+      BUCKET_PATH: ""
+      VERSION: ""
+
     steps:
       - uses: actions/checkout@v3
+      - name: Configure Environment
+        run: |
+          echo "Setting vars..."
+          export VERSION=$(git describe --dirty --tags --abbrev=10 --always --dirty)
+          export BUCKET_PATH="TheJumpCloud/jumpcloud-mac-loginwindow/${VERSION}/${BUNDLE}.tgz"
+          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
+          echo "BUCKET_PATH=${BUCKET_PATH}" >> "$GITHUB_ENV"
+          echo "Version is: ${VERSION}"
+          echo "Configuration complete!"
       - name: Lint
         run: |
           set -o pipefail
