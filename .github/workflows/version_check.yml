@@ -15,7 +15,19 @@ jobs:
     env:
       LABEL: ""
       LABEL_COUNT: 0
+      PR_LABEL_LIST: ${{ toJson(github.event.pull_request.labels.*.name) }}
     steps:
+      - name: Get Current Labels
+        # env:
+        #   GH_TOKEN: ${{ secrets.JC_CI_GH_TOKEN }}
+        run: |
+          gh api -H "Accept: application/vnd.github+json" /repos/ORG/REPO/issues/${{ github.event.pull_request.number }}/labels
+          gh api -H "Accept: application/vnd.github+json" /repos/ORG/REPO/issues/${{ github.event.pull_request.number }}/labels | jq '[.[].name]'
+          LABEL_RESPONSE=$(gh api -H "Accept: application/vnd.github+json" /repos/ORG/REPO/issues/${{ github.event.pull_request.number }}/labels)
+          LABEL_RESPONSE_NAMES=$(gh api -H "Accept: application/vnd.github+json" /repos/ORG/REPO/issues/${{ github.event.pull_request.number }}/labels | jq '[.[].name]')
+          echo $LABEL_RESPONSE
+          echo $LABEL_RESPONSE_NAMES
+          exit 1
       - name: Major
         if: contains(github.event.issue.labels.*.name, 'major')
         run: |
