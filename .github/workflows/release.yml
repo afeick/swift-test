@@ -1,6 +1,6 @@
 name: Create Release
 
-concurrency:`
+concurrency:
   group: create-release
 
 on:
