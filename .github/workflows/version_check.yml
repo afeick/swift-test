@@ -15,10 +15,8 @@ jobs:
     env:
       LABEL: ""
       LABEL_COUNT: 0
-      PR_LABEL_LIST: ${{ github.event.pull_request.labels.*.name }}
-      PR_LABEL_LIST_JSON: ${{ toJson(github.event.pull_request.labels.*.name) }}
-      ISSUE_LABEL_LIST: ${{ github.event.issue.labels.*.name }}
-      ISSUE_LABEL_LIST_JSON: ${{ toJson(github.event.issue.labels.*.name) }}
+      PR_LABEL_LIST: ${{ toJson(github.event.pull_request.labels.*.name) }}
+      ISSUE_LABEL_LIST: ${{ toJson(github.event.issue.labels.*.name) }}
     steps:
       - name: Get Current Labels
         env:
