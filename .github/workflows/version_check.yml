@@ -1,0 +1,49 @@
+name: Version Check
+
+on:
+  pull_request:
+   types: [opened, labeled, unlabeled, synchronize]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+   check_pr_labels:
+    name: Verify that the PR has a valid label 
+    runs-on: ubuntu-latest
+    env:
+      LABEL: ""
+      LABEL_COUNT: 0
+
+    steps:
+      - name: Major
+        if: contains(github.event.issue.labels.*.name, 'major')
+        run: |
+          LABEL_COUNT=$((LABEL_COUNT+1))
+          echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
+          echo "LABEL='major'" >> "$GITHUB_ENV"
+      - name: Minor
+        if: contains(github.event.issue.labels.*.name, 'minor')
+        run: |
+          LABEL_COUNT=$((LABEL_COUNT+1))
+          echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
+          echo "LABEL='minor'" >> "$GITHUB_ENV"
+      - name: Patch
+        if: contains(github.event.issue.labels.*.name, 'patch')
+        run: |
+          LABEL_COUNT=$((LABEL_COUNT+1))
+          echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
+          echo "LABEL='minor'" >> "$GITHUB_ENV"
+      - name: No Version
+        if: contains(github.event.issue.labels.*.name, 'no version')
+        run: |
+          LABEL_COUNT=$((LABEL_COUNT+1))
+          echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
+          echo "LABEL='no version'" >> "$GITHUB_ENV"
+      - name: No Version Label
+        if: ${{ env.LABEL_COUNT }} < 1
+        run: echo "::error::No version label detected! PRs require one of the follow labels: major, minor, patch, no version"
+      - name: Multiple Version Labels
+        if: ${{ env.LABEL_COUNT }} > 1
+        run: echo "::error::Too many versions detected! PRs require one of the follow labels: major, minor, patch, no version"
