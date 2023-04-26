@@ -8,5 +8,6 @@ final class SwiftTestTests: XCTestCase {
         // results.
         XCTAssertEqual(SwiftTest().text, "Hello, World!")
         XCTAssertEqual(SwiftTest("Hello, Bitches!").text, "Hello, Bitches!")
+        // adding a comment
     }
 }
