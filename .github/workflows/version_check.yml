@@ -1,0 +1,56 @@
+name: Version Check
+
+on:
+  pull_request:
+    types: [opened, labeled, unlabeled, synchronize]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check_pr_labels:
+    name: Verify PR label(s)
+    runs-on: ubuntu-latest
+    env:
+      LABEL: ""
+      LABEL_COUNT: 0
+      PR_LABEL_LIST: ${{ toJson(github.event.pull_request.labels.*.name) }}
+    steps:
+      - name: Major
+        if: contains(github.event.pull_request.labels.*.name, 'major')
+        run: |
+          LABEL_COUNT=$((LABEL_COUNT+1))
+          echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
+          echo "LABEL='major'" >> "$GITHUB_ENV"
+      - name: Minor
+        if: contains(github.event.pull_request.labels.*.name, 'minor')
+        run: |
+          LABEL_COUNT=$((LABEL_COUNT+1))
+          echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
+          echo "LABEL='minor'" >> "$GITHUB_ENV"
+      - name: Patch
+        if: contains(github.event.pull_request.labels.*.name, 'patch')
+        run: |
+          LABEL_COUNT=$((LABEL_COUNT+1))
+          echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
+          echo "LABEL='minor'" >> "$GITHUB_ENV"
+      - name: No Version
+        if: contains(github.event.pull_request.labels.*.name, 'no version')
+        run: |
+          LABEL_COUNT=$((LABEL_COUNT+1))
+          echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
+          echo "LABEL='no version'" >> "$GITHUB_ENV"
+      - name: Check Label
+        run: |
+          if [[ ${LABEL_COUNT} == 1 ]]; then
+            echo "::notice::Version verified!"
+            echo "::notice::Successfully identified version label for PR: '${LABEL}'"
+          elif [[ ${LABEL_COUNT} < 1 ]]; then
+            echo "::error::No version label detected!"
+            echo "::error::PRs require one of the following labels: major, minor, patch, no version"
+          elif [[ ${LABEL_COUNT} > 1 ]]; then
+            echo "::error::Too many versions detected!"
+            echo "::error::Remove extra version label(s). Only one of the following is allowed: major, minor, patch, no version"
+          fi
+          exit $((LABEL_COUNT-1))
