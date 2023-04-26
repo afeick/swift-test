@@ -16,9 +16,12 @@ jobs:
       VERSION: ""
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Fetch Tags
-        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      # - name: Fetch Tags
+      #   run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
       - name: Configure Environment
         run: |
           set +e
