@@ -15,7 +15,10 @@ jobs:
     env:
       LABEL: ""
       LABEL_COUNT: 0
-      PR_LABEL_LIST: ${{ toJson(github.event.pull_request.labels.*.name) }}
+      PR_LABEL_LIST: ${{ github.event.pull_request.labels.*.name }}
+      PR_LABEL_LIST_JSON: ${{ toJson(github.event.pull_request.labels.*.name) }}
+      ISSUE_LABEL_LIST: ${{ github.event.issue.labels.*.name }}
+      ISSUE_LABEL_LIST_JSON: ${{ toJson(github.event.issue.labels.*.name) }}
     steps:
       - name: Get Current Labels
         env:
@@ -29,25 +32,25 @@ jobs:
           echo $LABEL_RESPONSE_NAMES
           exit 1
       - name: Major
-        if: contains(github.event.issue.labels.*.name, 'major')
+        if: contains(github.event.pull_request.labels.*.name, 'major')
         run: |
           LABEL_COUNT=$((LABEL_COUNT+1))
           echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
           echo "LABEL='major'" >> "$GITHUB_ENV"
       - name: Minor
-        if: contains(github.event.issue.labels.*.name, 'minor')
+        if: contains(github.event.pull_request.labels.*.name, 'minor')
         run: |
           LABEL_COUNT=$((LABEL_COUNT+1))
           echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
           echo "LABEL='minor'" >> "$GITHUB_ENV"
       - name: Patch
-        if: contains(github.event.issue.labels.*.name, 'patch')
+        if: contains(github.event.pull_request.labels.*.name, 'patch')
         run: |
           LABEL_COUNT=$((LABEL_COUNT+1))
           echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
           echo "LABEL='minor'" >> "$GITHUB_ENV"
       - name: No Version
-        if: contains(github.event.issue.labels.*.name, 'no version')
+        if: contains(github.event.pull_request.labels.*.name, 'no version')
         run: |
           LABEL_COUNT=$((LABEL_COUNT+1))
           echo "LABEL_COUNT=${LABEL_COUNT}" >> "$GITHUB_ENV"
